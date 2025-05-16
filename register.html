@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Вход по телефону</title>
+  <link rel="stylesheet" href="css/register.css" />
+  <script src="https://unpkg.com/inputmask@5.0.8/dist/inputmask.min.js"></script>
+  <style>
+    .verification-code { display: none; }
+    .error-message { color: red; margin-top: 5px; }
+    .success-message { color: green; margin-top: 5px; }
+    .password-fields { display: none; }
+    .toggle-auth { 
+      background: none;
+      border: none;
+      color: #0066cc;
+      text-decoration: underline;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2 id="auth-title">Вход по номеру телефона</h2>
+    <form id="phoneAuthForm">
+      <!-- Форма входа по телефону -->
+      <div class="phone-fields">
+        <div class="input-group">
+          <label for="phoneNumber">Номер телефона</label>
+          <input type="tel" id="phoneNumber" name="phoneNumber" placeholder="+7 (___) ___-__-__" required>
+          <div class="error-message" id="phone-error"></div>
+        </div>
+
+        <div class="input-group verification-code">
+          <label for="verificationCode">Код подтверждения</label>
+          <input type="text" id="verificationCode" name="verificationCode" placeholder="Введите код из SMS">
+          <div class="error-message" id="code-error"></div>
+        </div>
+
+        <button type="button" class="login-btn" id="sendCodeBtn">Получить код</button>
+        <button type="button" class="login-btn verification-code" id="verifyCodeBtn" style="display: none;">Подтвердить</button>
+      </div>
+      
+      <!-- Форма входа по паролю -->
+      <div class="password-fields">
+        <div class="input-group">
+          <label for="phoneForPassword">Номер телефона</label>
+          <input type="tel" id="phoneForPassword" name="phoneForPassword" placeholder="+7 (___) ___-__-__">
+        </div>
+        
+        <div class="input-group">
+          <label for="password">Пароль</label>
+          <input type="password" id="password" name="password" placeholder="Введите пароль">
+          <div class="error-message" id="password-error"></div>
+        </div>
+        
+        <button type="button" class="login-btn" id="loginWithPasswordBtn">Войти</button>
+      </div>
+      
+      <div class="success-message" id="success-message"></div>
+      
+      <button type="button" class="toggle-auth" id="toggleAuthBtn">У меня есть пароль</button>
+    </form>
+  </div>
+
+  <script src=js/register.js
+  ></script>
+    
+</body>
+</html>

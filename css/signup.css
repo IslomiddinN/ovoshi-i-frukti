@@ -1,0 +1,363 @@
+/* Общие стили */
+body {
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    line-height: 1.6;
+    background-color: #f9f9f9;
+  }
+  
+  .container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+  }
+  
+  /* Стили шапки */
+  .header-top {
+    background-color: #4a8f29;
+    color: white;
+    padding: 10px 0;
+    font-size: 14px;
+  }
+  
+  .header-top .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  
+  .contact-info span {
+    margin-right: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .auth-links a {
+    color: white;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: opacity 0.3s;
+  }
+  
+  .auth-links a:hover {
+    opacity: 0.8;
+  }
+  
+  .header-main {
+    padding: 20px 0;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .logo {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .logo h1 {
+    font-family: 'Playfair Display', serif;
+    margin: 0;
+    color: #4a8f29;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .logo p {
+    margin: 5px 0 0;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  nav {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.3s;
+  }
+  
+  nav a:hover {
+    color: #4a8f29;
+  }
+  
+  .cart-link {
+    margin-left: auto;
+    position: relative;
+  }
+  
+  .cart-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: #ff5722;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+  
+  /* Основной контент */
+  .auth-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 40px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+  }
+  
+  .auth-title {
+    text-align: center;
+    color: #4a8f29;
+    margin-bottom: 30px;
+    font-size: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .auth-form .form-group {
+    margin-bottom: 25px;
+  }
+  
+  .auth-form label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    font-size: 15px;
+  }
+  
+  .auth-form input {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  
+  .auth-form input:focus {
+    border-color: #4a8f29;
+    box-shadow: 0 0 0 3px rgba(74, 143, 41, 0.2);
+    outline: none;
+  }
+  
+  .privacy-check {
+    margin: 25px 0;
+    display: flex;
+    align-items: flex-start;
+  }
+  
+  .privacy-check input {
+    width: 18px;
+    height: 18px;
+    margin-right: 10px;
+    margin-top: 3px;
+  }
+  
+  .privacy-check label {
+    margin-bottom: 0;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .privacy-check a {
+    color: #4a8f29;
+    text-decoration: none;
+  }
+  
+  .privacy-check a:hover {
+    text-decoration: underline;
+  }
+  
+  button[type="submit"] {
+    width: 100%;
+    padding: 16px;
+    background-color: #4a8f29;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #3a7a19;
+    transform: translateY(-2px);
+  }
+  
+  button[type="submit"]:active {
+    transform: translateY(0);
+  }
+  
+  .auth-links {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 15px;
+  }
+  
+  .auth-links a {
+    color: #4a8f29;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  
+  .auth-links a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Подвал */
+  footer {
+    background-color: #2c3e50;
+    padding: 50px 0 20px;
+    margin-top: 80px;
+    color: #ecf0f1;
+  }
+  
+  .footer-column {
+    margin-bottom: 30px;
+  }
+  
+  .footer-column h3 {
+    color: #4a8f29;
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  
+  .footer-column p, 
+  .footer-column ul {
+    color: #bdc3c7;
+    font-size: 15px;
+  }
+  
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-column li {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .social-links {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+  }
+  
+  .social-links a {
+    color: #bdc3c7;
+    font-size: 22px;
+    transition: color 0.3s;
+  }
+  
+  .social-links a:hover {
+    color: #4a8f29;
+  }
+  
+  .copyright {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #34495e;
+    margin-top: 40px;
+    font-size: 14px;
+    color: #7f8c8d;
+  }
+  
+  /* Адаптивность */
+  @media (max-width: 768px) {
+    .header-top .container {
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+    
+    .header-main .container {
+      flex-direction: column;
+    }
+    
+    nav {
+      margin-top: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .cart-link {
+      margin-left: 0;
+      margin-top: 15px;
+    }
+    
+    .auth-container {
+      padding: 30px 20px;
+      margin: 30px auto;
+    }
+    
+    footer .container {
+      flex-direction: column;
+    }
+    
+    .footer-column {
+      width: 100%;
+      text-align: center;
+    }
+    
+    .social-links {
+      justify-content: center;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .auth-form input,
+    button[type="submit"] {
+      padding: 12px;
+    }
+    
+    .auth-title {
+      font-size: 24px;
+    }
+    
+    .logo h1 {
+      font-size: 24px;
+    }
+    
+    nav a {
+      font-size: 14px;
+    }
+  }

@@ -1,0 +1,24 @@
+
+def init_db():
+    conn = sqlite3.connect('auth.db')
+    c = conn.cursor()
+    
+    # Таблица пользователей
+    c.execute('''CREATE TABLE IF NOT EXISTS users
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                 phone TEXT UNIQUE,
+                 password_hash TEXT,
+                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
+    
+    # Таблица кодов подтверждения
+    c.execute('''CREATE TABLE IF NOT EXISTS sms_codes
+                 (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                 phone TEXT,
+                 code TEXT,
+                 expires_at TIMESTAMP,
+                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
+    
+    conn.commit()
+    conn.close()
+
+init_db()

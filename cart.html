@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Корзина | ФрешМаркет</title>
+  <link rel="stylesheet" href="css/cart.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Стили для модальных окон */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 500px;
+      max-width: 90%;
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    
+    /* Стили для окна ввода карты */
+    .card-details-content h3 {
+      margin-top: 0;
+      color: #2c3e50;
+    }
+    
+    .card-input {
+      margin-bottom: 15px;
+    }
+    
+    .card-input label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    .card-input input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    .card-row {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .card-row .card-input {
+      flex: 1;
+    }
+    
+    .card-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .card-buttons button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .card-submit {
+      background-color: #27ae60;
+      color: white;
+    }
+    
+    .card-cancel {
+      background-color: #e74c3c;
+      color: white;
+    }
+    
+    .card-icon {
+      font-size: 24px;
+      margin-right: 10px;
+      color: #3498db;
+    }
+    
+    /* Стили для способов оплаты */
+    .payment-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .payment-method {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .payment-method input {
+      margin-right: 10px;
+    }
+    
+    .payment-method i {
+      margin-right: 10px;
+      color: #3498db;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <h1><i class="fas fa-shopping-basket"></i> ФрешМаркет</h1>
+    </div>
+  </header>
+
+  <main>
+    <section class="cart-section">
+      <div class="container">
+        <h1><i class="fas fa-shopping-cart"></i> Ваша корзина</h1>
+        
+        <div class="cart-container">
+          <div id="cart-items" class="cart-items">
+            <!-- Товары будут загружаться здесь -->
+          </div>
+          
+          <div class="cart-summary">
+            <h2><i class="fas fa-receipt"></i> Ваш заказ</h2>
+            <div class="summary-details">
+              <div class="summary-row">
+                <span>Товары (<span id="items-count">0</span>)</span>
+                <span id="subtotal">0 ₽</span>
+              </div>
+              <div class="summary-row">
+                <span>Скидка</span>
+                <span id="discount">-0 ₽</span>
+              </div>
+              <div class="summary-row">
+                <span>Доставка</span>
+                <span id="delivery">Бесплатно</span>
+              </div>
+              <div class="summary-row total">
+                <span>Итого к оплате</span>
+                <span id="total">0 ₽</span>
+              </div>
+            </div>
+            <button id="checkout-btn" class="checkout-btn"><i class="fas fa-credit-card"></i> Оформить заказ</button>
+            <div class="delivery-info">
+              <i class="fas fa-truck"></i>
+              <p>Доставим сегодня</p>
+            </div>
+            
+            <div class="promo-code-container">
+              <div class="promo-code-label">
+                <i class="fas fa-tag"></i>
+                <span>У вас есть промокод?</span>
+              </div>
+              <div class="promo-code-input">
+                <input id="promo-code" type="text" placeholder="Введите промокод">
+                <button id="apply-promo">Применить</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Модальное окно оформления заказа -->
+  <div id="checkout-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2><i class="fas fa-truck"></i> Оформление заказа</h2>
+      
+      <form id="delivery-form">
+        <div class="form-group">
+          <label for="name">Имя получателя:</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="phone">Телефон:</label>
+          <input type="tel" id="phone" name="phone" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="address">Адрес доставки:</label>
+          <input type="text" id="address" name="address" placeholder="Улица, дом, квартира" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="delivery-date">Дата доставки:</label>
+          <input type="date" id="delivery-date" name="delivery-date" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="delivery-time">Время доставки:</label>
+          <select id="delivery-time" name="delivery-time" required>
+            <option value="">Выберите время</option>
+            <option value="10:00-14:00">10:00 - 14:00</option>
+            <option value="11:00-14:00">11:00 - 14:00</option>
+            <option value="12:00-14:00">12:00 - 14:00</option>
+            <option value="13:00-14:00">13:00 - 14:00</option>
+            <option value="11:00-15:00">11:00 - 15:00</option>
+            <option value="15:00-18:00">15:00 - 18:00</option>
+            <option value="14:00-18:00">14:00 - 18:00</option>
+            <option value="18:00-22:00">18:00 - 22:00</option>
+          </select>
+        </div>
+        
+        <!-- Блок выбора способа оплаты -->
+        <div class="form-group">
+          <label>Способ оплаты:</label>
+          <div class="payment-methods">
+            <label class="payment-method">
+              <input type="radio" name="payment" value="cash" checked>
+              <i class="fas fa-money-bill-wave"></i>
+              <span>Наличными при получении</span>
+            </label>
+            
+            <label class="payment-method">
+              <input type="radio" name="payment" value="card" id="card-payment">
+              <i class="fas fa-credit-card"></i>
+              <span>Картой онлайн</span>
+            </label>
+            
+            <label class="payment-method">
+              <input type="radio" name="payment" value="sbp">
+              <i class="fas fa-mobile-alt"></i>
+              <span>СБП (Система быстрых платежей)</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="comments">Комментарии к заказу:</label>
+          <textarea id="comments" name="comments" rows="3"></textarea>
+        </div>
+        
+        <button type="submit" class="submit-order-btn"><i class="fas fa-check"></i> Подтвердить заказ</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Модальное окно для ввода данных карты -->
+  <div id="card-details-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="close-card-modal">&times;</span>
+      <h3><i class="fas fa-credit-card card-icon"></i> Введите данные карты</h3>
+      <form id="card-form">
+        <div class="card-input">
+          <label for="card-number">Номер карты</label>
+          <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+        </div>
+        
+        <div class="card-input">
+          <label for="card-name">Имя владельца</label>
+          <input type="text" id="card-name" placeholder="IVAN IVANOV" required>
+        </div>
+        
+        <div class="card-row">
+          <div class="card-input">
+            <label for="card-expiry">Срок действия</label>
+            <input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5" required>
+          </div>
+          
+          <div class="card-input">
+            <label for="card-cvv">CVV/CVC</label>
+            <input type="password" id="card-cvv" placeholder="123" maxlength="3" required>
+          </div>
+        </div>
+        
+        <div class="card-buttons">
+          <button type="button" class="card-cancel" id="card-cancel">Отмена</button>
+          <button type="submit" class="card-submit">Подтвердить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <p>© 2015 ФрешМаркет - Доставка свежих овощей и фруктов</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-vk"></i></a>
+          <a href="#"><i class="fab fa-telegram"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/cart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Получаем корзину из localStorage
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      let discount = 0;
+      const discountCodes = {
+        'FRESH10': 10,
+        'VEGETABLE20': 20,
+        'SUMMER15': 15
+      };
+    
+      // Элементы DOM
+      const cartItemsEl = document.getElementById('cart-items');
+      const itemsCountEl = document.getElementById('items-count');
+      const subtotalEl = document.getElementById('subtotal');
+      const discountEl = document.getElementById('discount');
+      const totalEl = document.getElementById('total');
+      const checkoutBtn = document.getElementById('checkout-btn');
+      const promoCodeInput = document.getElementById('promo-code');
+      const applyPromoBtn = document.getElementById('apply-promo');
+    
+      // Отображаем корзину
+      function renderCart() {
+        cartItemsEl.innerHTML = '';
+        
+        if (cart.length === 0) {
+          cartItemsEl.innerHTML = `
+            <div class="empty-cart">
+              <i class="fas fa-shopping-cart"></i>
+              <h3>Ваша корзина пуста</h3>
+              <p>Добавьте товары из каталога</p>
+            </div>
+          `;
+          checkoutBtn.disabled = true;
+          updateSummary();
+          return;
+        }
+        
+        checkoutBtn.disabled = false;
+        
+        cart.forEach(item => {
+          const itemEl = document.createElement('div');
+          itemEl.className = 'cart-item';
+          itemEl.innerHTML = `
+            <div class="item-info">
+              <img src="${item.image || 'images/default-product.jpg'}" alt="${item.name}" class="item-image">
+              <div>
+                <h3>${item.name}</h3>
+                <p>${item.price} ₽/шт</p>
+              </div>
+            </div>
+            <div class="item-controls">
+              <div class="quantity-control">
+                <button class="quantity-btn minus" data-id="${item.id}">-</button>
+                <span>${item.quantity}</span>
+                <button class="quantity-btn plus" data-id="${item.id}">+</button>
+              </div>
+              <div style="min-width: 80px; text-align: right;">
+                <p>${item.price * item.quantity} ₽</p>
+              </div>
+              <button class="remove-btn" data-id="${item.id}">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          `;
+          cartItemsEl.appendChild(itemEl);
+        });
+        
+        updateSummary();
+        addCartEventListeners();
+      }
+    
+      // Добавляем обработчики событий для элементов корзины
+      function addCartEventListeners() {
+        document.querySelectorAll('.quantity-btn.minus').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const id = e.target.dataset.id;
+            const itemIndex = cart.findIndex(item => item.id === id);
+            if (cart[itemIndex].quantity > 1) {
+              cart[itemIndex].quantity--;
+            } else {
+              cart.splice(itemIndex, 1);
+            }
+            renderCart();
+          });
+        });
+        
+        document.querySelectorAll('.quantity-btn.plus').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const id = e.target.dataset.id;
+            const itemIndex = cart.findIndex(item => item.id === id);
+            cart[itemIndex].quantity++;
+            renderCart();
+          });
+        });
+        
+        document.querySelectorAll('.remove-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const id = e.target.closest('button').dataset.id;
+            const itemIndex = cart.findIndex(item => item.id === id);
+            cart.splice(itemIndex, 1);
+            renderCart();
+          });
+        });
+      }
+    
+      // Обновляем итоговую информацию
+      function updateSummary() {
+        const itemsCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const total = subtotal - discount;
+        
+        itemsCountEl.textContent = itemsCount;
+        subtotalEl.textContent = subtotal + ' ₽';
+        discountEl.textContent = '-' + discount + ' ₽';
+        totalEl.textContent = total + ' ₽';
+        
+        // Сохраняем корзину в localStorage
+        localStorage.setItem('cart', JSON.stringify(cart));
+      }
+    
+      // Применение промокода
+      applyPromoBtn.addEventListener('click', function() {
+        const code = promoCodeInput.value.trim().toUpperCase();
+        if (discountCodes[code]) {
+          const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+          discount = Math.round(subtotal * discountCodes[code] / 100);
+          updateSummary();
+          promoCodeInput.style.borderColor = '#27ae60';
+          setTimeout(() => {
+            promoCodeInput.style.borderColor = '#ddd';
+          }, 2000);
+        } else {
+          discount = 0;
+          promoCodeInput.style.borderColor = '#e74c3c';
+          setTimeout(() => {
+            promoCodeInput.style.borderColor = '#ddd';
+          }, 2000);
+          updateSummary();
+        }
+      });
+    
+      // Модальные окна
+      const checkoutModal = document.getElementById("checkout-modal");
+      const cardModal = document.getElementById("card-details-modal");
+      const closeBtns = document.querySelectorAll(".close");
+      const cardPayment = document.querySelector('input[name="payment"][value="card"]');
+      
+      // Открытие модального окна оформления заказа
+      checkoutBtn.addEventListener('click', function() {
+        if (cart.length === 0) return;
+        checkoutModal.style.display = "block";
+      });
+      
+      // Закрытие модальных окон
+      closeBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          checkoutModal.style.display = "none";
+          cardModal.style.display = "none";
+        });
+      });
+      
+      // Обработка выбора оплаты картой
+      if (cardPayment) {
+        cardPayment.addEventListener('change', function() {
+          if (this.checked) {
+            cardModal.style.display = "block";
+          }
+        });
+      }
+      
+      // Обработка отмены ввода карты
+      document.getElementById("card-cancel").addEventListener('click', function() {
+        cardModal.style.display = "none";
+        document.querySelector('input[name="payment"][value="cash"]').checked = true;
+      });
+      
+      // Закрытие при клике вне модального окна
+      window.addEventListener('click', function(event) {
+        if (event.target == checkoutModal) {
+          checkoutModal.style.display = "none";
+        }
+        if (event.target == cardModal) {
+          cardModal.style.display = "none";
+          document.querySelector('input[name="payment"][value="cash"]').checked = true;
+        }
+      });
+      
+      // Обработка отправки формы карты
+      document.getElementById("card-form").addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Валидация данных карты
+        const cardNumber = document.getElementById("card-number").value.replace(/\s/g, '');
+        const cardName = document.getElementById("card-name").value;
+        const cardExpiry = document.getElementById("card-expiry").value;
+        const cardCvv = document.getElementById("card-cvv").value;
+        
+        if (!validateCardNumber(cardNumber)) {
+          alert("Пожалуйста, введите корректный номер карты (16 цифр)");
+          return;
+        }
+        
+        if (!validateExpiry(cardExpiry)) {
+          alert("Пожалуйста, введите корректный срок действия карты (MM/YY)");
+          return;
+        }
+        
+        if (!validateCvv(cardCvv)) {
+          alert("Пожалуйста, введите корректный CVV/CVC код (3 цифры)");
+          return;
+        }
+        
+        if (cardName.trim().length < 2) {
+          alert("Пожалуйста, введите имя владельца карты");
+          return;
+        }
+        
+        cardModal.style.display = "none";
+      });
+      
+      // Обработка отправки основной формы
+      document.getElementById("delivery-form").addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+        
+        if (paymentMethod === "card") {
+          const cardNumber = document.getElementById("card-number").value;
+          if (!cardNumber || !validateCardNumber(cardNumber.replace(/\s/g, ''))) {
+            alert("Пожалуйста, введите данные карты");
+            cardModal.style.display = "block";
+            return;
+          }
+        }
+        
+        alert(`Заказ успешно оформлен! Способ оплаты: ${getPaymentMethodName(paymentMethod)}. Спасибо за покупку!`);
+        checkoutModal.style.display = "none";
+        
+        // Очищаем корзину
+        cart = [];
+        discount = 0;
+        promoCodeInput.value = '';
+        localStorage.removeItem('cart');
+        renderCart();
+      });
+      
+      // Функции валидации
+      function validateCardNumber(number) {
+        return /^\d{16}$/.test(number);
+      }
+      
+      function validateExpiry(expiry) {
+        return /^\d{2}\/\d{2}$/.test(expiry);
+      }
+      
+      function validateCvv(cvv) {
+        return /^\d{3}$/.test(cvv);
+      }
+      
+      // Форматирование номера карты
+      document.getElementById("card-number").addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        let formatted = '';
+        
+        for (let i = 0; i < value.length; i++) {
+          if (i > 0 && i % 4 === 0) formatted += ' ';
+          formatted += value[i];
+        }
+        
+        e.target.value = formatted.substring(0, 19);
+      });
+      
+      // Форматирование срока действия
+      document.getElementById("card-expiry").addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        
+        if (value.length > 2) {
+          value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        
+        e.target.value = value.substring(0, 5);
+      });
+      
+      // Функция для получения названия способа оплаты
+      function getPaymentMethodName(value) {
+        switch(value) {
+          case 'cash': return 'Наличными при получении';
+          case 'card': return 'Картой онлайн';
+          case 'sbp': return 'СБП (Система быстрых платежей)';
+          default: return 'Неизвестный способ';
+        }
+      }
+    
+      // Инициализация
+      renderCart();
+    });
+    </script>
+  </script>
+</body>
+</html>
