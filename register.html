@@ -3,17 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Вход по телефону</title>
-  <link rel="icon" href="favicon_io/favicon-32x32.png" type="favicon_io/favicon-32x32.png">
-  <link rel="icon" href="favicon_io/favicon-32x32.png" type="favicon_io/favicon-32x32.png" sizes="32x32">
-  <link rel="icon" href="favicon_io/favicon-16x16.png" type="favicon_io/favicon-16x16.png" sizes="16x16">
-  <link rel="apple-touch-icon" href="favicon_io/apple-touch-icon.png">
-  <link rel="manifest" href="site.webmanifest">
+  <title>Вход по телефону или email</title>
+  <link rel="icon" href="favicon_io/favicon-32x32.png" type="image/png">
   <link rel="stylesheet" href="css/register.css" />
   <script src="https://unpkg.com/inputmask@5.0.8/dist/inputmask.min.js"></script>
   <style>
     .verification-code { display: none; }
-    .error-message { color: red; margin-top: 5px; }
+    .error-message { color: red; margin-top: 5px; font-size: 0.8em; }
     .success-message { color: green; margin-top: 5px; }
     .password-fields { display: none; }
     .toggle-auth { 
@@ -22,14 +18,51 @@
       color: #0066cc;
       text-decoration: underline;
       cursor: pointer;
-      margin-top: 10px;
+      margin: 15px 0;
+      display: block;
+    }
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+    }
+    .auth-tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .auth-tab.active {
+      border-bottom: 2px solid #0066cc;
+      color: #0066cc;
+      font-weight: bold;
+    }
+    .input-group {
+      margin-bottom: 15px;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .login-btn:disabled {
+      background-color: #cccccc;
     }
   </style>
 </head>
 <body>
   <div class="login-container">
+    <div class="auth-tabs">
+      <div class="auth-tab active" data-tab="phone">По телефону</div>
+      <div class="auth-tab" data-tab="email">По email</div>
+    </div>
+    
     <h2 id="auth-title">Вход по номеру телефона</h2>
-    <form id="phoneAuthForm">
+    
+    <form id="authForm">
       <!-- Форма входа по телефону -->
       <div class="phone-fields">
         <div class="input-group">
@@ -40,7 +73,7 @@
 
         <div class="input-group verification-code">
           <label for="verificationCode">Код подтверждения</label>
-          <input type="text" id="verificationCode" name="verificationCode" placeholder="Введите код из SMS">
+          <input type="text" id="verificationCode" name="verificationCode" placeholder="Введите код из SMS" maxlength="6">
           <div class="error-message" id="code-error"></div>
         </div>
 
@@ -48,30 +81,154 @@
         <button type="button" class="login-btn verification-code" id="verifyCodeBtn" style="display: none;">Подтвердить</button>
       </div>
       
-      <!-- Форма входа по паролю -->
-      <div class="password-fields">
+      <!-- Форма входа по email -->
+      <div class="email-fields" style="display: none;">
         <div class="input-group">
-          <label for="phoneForPassword">Номер телефона</label>
-          <input type="tel" id="phoneForPassword" name="phoneForPassword" placeholder="+7 (___) ___-__-__">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="example@mail.ru">
+          <div class="error-message" id="email-error"></div>
+        </div>
+
+        <div class="input-group">
+          <label for="emailPassword">Пароль</label>
+          <input type="password" id="emailPassword" name="emailPassword" placeholder="Введите пароль">
+          <div class="error-message" id="email-password-error"></div>
         </div>
         
-        <div class="input-group">
-          <label for="password">Пароль</label>
-          <input type="password" id="password" name="password" placeholder="Введите пароль">
-          <div class="error-message" id="password-error"></div>
-        </div>
-        
-        <button type="button" class="login-btn" id="loginWithPasswordBtn">Войти</button>
+        <button type="button" class="login-btn" id="loginWithEmailBtn">Войти</button>
       </div>
       
       <div class="success-message" id="success-message"></div>
       
-      <button type="button" class="toggle-auth" id="toggleAuthBtn">У меня есть пароль</button>
+      <button type="button" class="toggle-auth" id="toggleAuthBtn">Войти с паролем</button>
     </form>
   </div>
 
-  <script src=js/register.js
-  ></script>
-    
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Инициализация маски для телефона
+      Inputmask("+7 (999) 999-99-99").mask(document.getElementById('phoneNumber'));
+      
+      // Элементы DOM
+      const phoneTab = document.querySelector('[data-tab="phone"]');
+      const emailTab = document.querySelector('[data-tab="email"]');
+      const phoneFields = document.querySelector('.phone-fields');
+      const emailFields = document.querySelector('.email-fields');
+      const authTitle = document.getElementById('auth-title');
+      const toggleAuthBtn = document.getElementById('toggleAuthBtn');
+      
+      // Переключение между телефоном и email
+      phoneTab.addEventListener('click', function() {
+        phoneTab.classList.add('active');
+        emailTab.classList.remove('active');
+        phoneFields.style.display = 'block';
+        emailFields.style.display = 'none';
+        authTitle.textContent = 'Вход по номеру телефона';
+        toggleAuthBtn.textContent = 'Войти с паролем';
+      });
+      
+      emailTab.addEventListener('click', function() {
+        emailTab.classList.add('active');
+        phoneTab.classList.remove('active');
+        emailFields.style.display = 'block';
+        phoneFields.style.display = 'none';
+        authTitle.textContent = 'Вход по email';
+        toggleAuthBtn.textContent = 'Войти с кодом';
+      });
+      
+      // Обработчики для входа по телефону
+      document.getElementById('sendCodeBtn').addEventListener('click', function() {
+        const phoneNumber = document.getElementById('phoneNumber').value;
+        const phoneError = document.getElementById('phone-error');
+        
+        if (!phoneNumber || phoneNumber.includes('_')) {
+          phoneError.textContent = 'Введите корректный номер телефона';
+          return;
+        }
+        
+        phoneError.textContent = '';
+        
+        // Здесь должна быть отправка кода на телефон
+        console.log('Отправка кода на номер:', phoneNumber);
+        
+        // Показываем поле для ввода кода
+        document.querySelector('.verification-code').style.display = 'block';
+        document.getElementById('sendCodeBtn').style.display = 'none';
+        document.getElementById('verifyCodeBtn').style.display = 'block';
+        
+        document.getElementById('success-message').textContent = 'Код отправлен на ваш телефон';
+        setTimeout(() => {
+          document.getElementById('success-message').textContent = '';
+        }, 3000);
+      });
+      
+      document.getElementById('verifyCodeBtn').addEventListener('click', function() {
+        const code = document.getElementById('verificationCode').value;
+        const codeError = document.getElementById('code-error');
+        
+        if (!code || code.length !== 6) {
+          codeError.textContent = 'Введите 6-значный код';
+          return;
+        }
+        
+        codeError.textContent = '';
+        
+        // Здесь должна быть проверка кода
+        console.log('Проверка кода:', code);
+        
+        // Имитация успешной авторизации
+        document.getElementById('success-message').textContent = 'Вход выполнен успешно!';
+        setTimeout(() => {
+          window.location.href = 'profile.html';
+        }, 1500);
+      });
+      
+      // Обработчик для входа по email
+      document.getElementById('loginWithEmailBtn').addEventListener('click', function() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('emailPassword').value;
+        const emailError = document.getElementById('email-error');
+        const passwordError = document.getElementById('email-password-error');
+        
+        // Валидация email
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          emailError.textContent = 'Введите корректный email';
+          return;
+        } else {
+          emailError.textContent = '';
+        }
+        
+        // Валидация пароля
+        if (!password || password.length < 6) {
+          passwordError.textContent = 'Пароль должен содержать минимум 6 символов';
+          return;
+        } else {
+          passwordError.textContent = '';
+        }
+        
+        // Здесь должна быть проверка email и пароля
+        console.log('Попытка входа с email:', email, 'и паролем:', password);
+        
+        // Имитация успешной авторизации
+        document.getElementById('success-message').textContent = 'Вход выполнен успешно!';
+        setTimeout(() => {
+          window.location.href = 'profile.html';
+        }, 1500);
+      });
+      
+      // Переключение между методами входа
+      toggleAuthBtn.addEventListener('click', function() {
+        if (phoneTab.classList.contains('active')) {
+          // Переключаем на вход по email с паролем
+          emailTab.click();
+          toggleAuthBtn.textContent = 'Войти с кодом';
+        } else {
+          // Переключаем на вход по телефону с кодом
+          phoneTab.click();
+          toggleAuthBtn.textContent = 'Войти с паролем';
+        }
+      });
+    });
+  </script>
 </body>
 </html>
