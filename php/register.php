@@ -1,11 +1,11 @@
 <?php
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: POST');
-header('Content-Type: application/json');
-
-$data = json_decode(file_get_contents('php://input'), true);
-
-// Обработка данных
-file_put_contents('register.log', print_r($data, true));
-
-echo json_encode(['success' => true]);
+// После успешной обработки регистрации
+echo '<script>
+  const userData = {
+    name: "'.htmlspecialchars($_POST['name'], ENT_QUOTES).'",
+    phone: "'.htmlspecialchars($_POST['phone'], ENT_QUOTES).'",
+    email: "'.htmlspecialchars($_POST['email'], ENT_QUOTES).'"
+  };
+  localStorage.setItem("userData", JSON.stringify(userData));
+  window.location.href = "profile.html";
+</script>';
