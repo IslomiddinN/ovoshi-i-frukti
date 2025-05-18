@@ -202,15 +202,53 @@
           el.classList.remove('input-error');
         });
 
-        // Валидация данных
-        const errors = validateForm();
-        if (errors.length > 0) {
-          showErrors(errors);
-          submitBtn.disabled = false;
-          spinner.classList.remove('show');
-          return;
-        }
+       // Замените этот код в вашем script-теге
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  submitBtn.disabled = true;
+  spinner.classList.add('show');
+  errorMessage.classList.remove('show');
+  
+  // Валидация данных
+  const errors = validateForm();
+  if (errors.length > 0) {
+    showErrors(errors);
+    submitBtn.disabled = false;
+    spinner.classList.remove('show');
+    return;
+  }
 
+  // Подготовка данных
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData.entries());
+
+  try {
+    // Реальная отправка на сервер
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+
+    if (!response.ok) {
+      throw new Error('Ошибка сервера');
+    }
+
+    const result = await response.json();
+    alert('Регистрация успешна!');
+    window.location.href = '/profile.html';
+    
+  } catch (error) {
+    errorMessage.textContent = 'Ошибка при регистрации: ' + error.message;
+    errorMessage.classList.add('show');
+  } finally {
+    submitBtn.disabled = false;
+    spinner.classList.remove('show');
+  }
+});
         // Подготовка данных для отправки
         const formData = {
           name: document.getElementById('name').value.trim(),
