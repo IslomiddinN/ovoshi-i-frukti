@@ -113,6 +113,25 @@ document.addEventListener('DOMContentLoaded', function() {
     .catch(error => {
       console.error('Error:', error);
     });
+    // После успешной авторизации
+if (data.status === 'success') {
+  // Сохраняем данные
+  localStorage.setItem('userData', JSON.stringify({
+    name: data.name,
+    phone: phone,
+    email: data.email
+  }));
+  
+  // Проверяем доступность profile.html
+  fetch('./profile.html')
+    .then(() => {
+      window.location.href = './profile.html';
+    })
+    .catch(() => {
+      console.error('Файл profile.html не найден');
+      alert('Профиль будет доступен после регистрации');
+    });
+}
   });
   // После успешной регистрации/входа
 const userData = {
