@@ -114,4 +114,17 @@ document.addEventListener('DOMContentLoaded', function() {
       console.error('Error:', error);
     });
   });
+  // После успешной регистрации/входа
+const userData = {
+  name: "Иван Иванов", // Получите эти данные с сервера или из формы
+  phone: document.getElementById('phoneNumber').value.replace(/\D/g, ''),
+  email: "user@example.com" // Получите с сервера
+};
+
+// Сохраняем данные в localStorage и sessionStorage для надежности
+localStorage.setItem('userData', JSON.stringify(userData));
+sessionStorage.setItem('userData', JSON.stringify(userData));
+
+// Перенаправляем на профиль с параметром
+window.location.href = 'profile.html?fromAuth=true';
 });
