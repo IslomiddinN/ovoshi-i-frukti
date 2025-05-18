@@ -164,7 +164,7 @@
     </div>
   </footer>
 
- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Инициализация корзины
@@ -216,23 +216,32 @@
         }
 
         // Подготовка данных
-        const formData = {
+        const userData = {
           name: document.getElementById('name').value.trim(),
           phone: document.getElementById('phone').value.replace(/\D/g, ''),
           email: document.getElementById('email').value.trim(),
-          password: document.getElementById('password').value,
-          address: document.getElementById('address').value.trim(),
-          newsletter: document.getElementById('newsletter').checked
+          address: document.getElementById('address').value.trim()
         };
 
+        // Сохраняем данные в localStorage
+        localStorage.setItem('userData', JSON.stringify(userData));
+        
+        // Перенаправляем на страницу профиля
+        window.location.href = 'profile.html';
+        
+        // В реальном проекте здесь должна быть отправка на сервер:
+        /*
         try {
-          // Отправка на сервер
-          const response = await fetch('/api/profile', {
+          const response = await fetch('/api/register', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify({
+              ...userData,
+              password: document.getElementById('password').value,
+              newsletter: document.getElementById('newsletter').checked
+            })
           });
 
           if (!response.ok) {
@@ -241,15 +250,7 @@
           }
 
           const result = await response.json();
-          
-          // Сохраняем данные пользователя
-          localStorage.setItem('userData', JSON.stringify({
-            name: formData.name,
-            phone: formData.phone,
-            email: formData.email
-          }));
-          
-          // Перенаправляем на профиль
+          localStorage.setItem('userData', JSON.stringify(result.user));
           window.location.href = 'profile.html';
           
         } catch (error) {
@@ -259,6 +260,7 @@
           submitBtn.disabled = false;
           spinner.classList.remove('show');
         }
+        */
       });
 
       // Функция валидации формы
