@@ -4,150 +4,79 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Мой профиль | Корзинка</title>
-  <link rel="stylesheet" href="css/signup.css">
-  <link rel="icon" href="favicon_io/favicon-32x32.png" type="image/png">
+  <!-- Подключите те же стили, что и в register.html -->
   <style>
     .profile-container {
-      max-width: 800px;
+      max-width: 600px;
       margin: 30px auto;
       padding: 20px;
-      background: #f9f9f9;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border: 1px solid #ddd;
+      border-radius: 8px;
     }
-    .profile-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .profile-info {
-      margin-bottom: 20px;
-    }
-    .info-row {
-      display: flex;
+    .profile-info div {
       margin-bottom: 15px;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #eee;
     }
     .info-label {
       font-weight: bold;
-      width: 200px;
-    }
-    .logout-btn {
-      display: block;
-      margin: 30px auto 0;
-      padding: 10px 20px;
-      background: #dc3545;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+      display: inline-block;
+      width: 150px;
     }
   </style>
 </head>
 <body>
-  <!-- Повторяем шапку как в register.html -->
+  <!-- Шапка как в register.html -->
   <header>
-    <div class="header-top">
-      <div class="container">
-        <div class="contact-info">
-          <span><i class="fas fa-phone"></i> +7 996 107-35-09</span>
-          <span><i class="fas fa-map-marker-alt"></i> г. Уфа, ул. Лучистая 110</span>
-        </div>
-        <div class="auth-links">
-          <a href="register.html"><i class="fas fa-user"></i> Вход</a>
-        </div>
-      </div>
-    </div>
-    <div class="header-main">
-      <div class="container">
-        <div class="logo">
-          <h1><i class="fas fa-leaf"></i> Корзинка</h1>
-          <p>Натуральные продукты с доставкой</p>
-        </div>
-        <nav>
-          <a href="index.html"><i class="fas fa-home"></i> Главная</a>
-          <a href="cart.html" class="cart-link"><i class="fas fa-shopping-basket"></i> Корзина <span class="cart-count">0</span></a>
-        </nav>
-      </div>
-    </div>
+    <!-- ... -->
   </header>
 
   <main>
-    <div class="profile-container">
-      <div class="profile-header">
-        <h2><i class="fas fa-user-circle"></i> Мой профиль</h2>
-      </div>
-      
-      <div id="profile-content">
-        <!-- Сюда будут загружены данные -->
+    <div class="container">
+      <div class="profile-container">
+        <h2><i class="fas fa-user"></i> Мой профиль</h2>
+        <div id="profile-data">
+          <!-- Здесь отобразятся данные -->
+        </div>
       </div>
     </div>
   </main>
 
   <!-- Подвал как в register.html -->
   <footer>
-    <div class="container">
-      <!-- ... -->
-    </div>
+    <!-- ... -->
   </footer>
 
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Получаем сохраненные данные
       const userData = JSON.parse(localStorage.getItem('userData'));
-      const profileContent = document.getElementById('profile-content');
+      const profileData = document.getElementById('profile-data');
       
       if (userData) {
         // Отображаем данные профиля
-        profileContent.innerHTML = `
+        profileData.innerHTML = `
           <div class="profile-info">
-            <div class="info-row">
-              <div class="info-label">ФИО:</div>
-              <div>${userData.name || 'Не указано'}</div>
-            </div>
-            <div class="info-row">
-              <div class="info-label">Телефон:</div>
-              <div>${userData.phone || 'Не указан'}</div>
-            </div>
-            <div class="info-row">
-              <div class="info-label">Email:</div>
-              <div>${userData.email || 'Не указан'}</div>
-            </div>
-            ${userData.address ? `
-            <div class="info-row">
-              <div class="info-label">Адрес доставки:</div>
-              <div>${userData.address}</div>
-            </div>` : ''}
+            <div><span class="info-label">ФИО:</span> ${userData.name}</div>
+            <div><span class="info-label">Телефон:</span> ${userData.phone}</div>
+            <div><span class="info-label">Email:</span> ${userData.email}</div>
+            ${userData.address ? 
+              `<div><span class="info-label">Адрес:</span> ${userData.address}</div>` : ''}
           </div>
-          <button class="logout-btn" id="logoutBtn">
+          <button onclick="logout()" style="margin-top: 20px;">
             <i class="fas fa-sign-out-alt"></i> Выйти
           </button>
         `;
-        
-        // Обработчик кнопки выхода
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-          localStorage.removeItem('userData');
-          window.location.href = 'index.html';
-        });
       } else {
-        // Если данных нет
-        profileContent.innerHTML = `
-          <div style="text-align: center; padding: 40px;">
-            <h3>Данные профиля не найдены</h3>
-            <p>Пожалуйста, <a href="register.html">зарегистрируйтесь</a> или <a href="signup.html">войдите</a></p>
-          </div>
+        profileData.innerHTML = `
+          <p>Данные профиля не найдены</p>
+          <a href="register.html">Зарегистрироваться</a> или 
+          <a href="signup.html">Войти</a>
         `;
       }
-      
-      // Обновляем счетчик корзины
-      updateCartCount();
     });
-    
-    function updateCartCount() {
-      const cart = JSON.parse(localStorage.getItem('cart') || []);
-      document.querySelectorAll('.cart-count').forEach(el => {
-        el.textContent = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-      });
+
+    function logout() {
+      localStorage.removeItem('userData');
+      window.location.href = 'index.html';
     }
   </script>
 </body>
