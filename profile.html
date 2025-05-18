@@ -2,25 +2,103 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Профиль</title>
+  <title>Мой профиль</title>
+  <style>
+    .profile-container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    .profile-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .profile-info {
+      background: #f5f5f5;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    .info-row {
+      margin-bottom: 15px;
+    }
+    .info-label {
+      font-weight: bold;
+      display: inline-block;
+      width: 120px;
+    }
+    .not-found {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+    .auth-links {
+      margin-top: 20px;
+    }
+    .auth-links a {
+      color: #0066cc;
+      margin: 0 10px;
+    }
+  </style>
 </head>
 <body>
-  <div id="profile"></div>
-  
+  <div class="profile-container">
+    <div class="profile-header">
+      <h1>Мой профиль</h1>
+    </div>
+    
+    <div id="profileContent">
+      <!-- Данные будут загружены здесь -->
+    </div>
+  </div>
+
   <script>
-    const userData = JSON.parse(localStorage.getItem('userData'));
-    if (userData) {
-      document.getElementById('profile').innerHTML = `
-        <h1>Добро пожаловать, ${userData.name}!</h1>
-        <p>Телефон: ${userData.phone}</p>
-        ${userData.email ? `<p>Email: ${userData.email}</p>` : ''}
-      `;
-    } else {
-      document.getElementById('profile').innerHTML = `
-        <h1>Профиль не найден</h1>
-        <a href="./signup.html">Войти</a>
-      `;
-    }
+    document.addEventListener('DOMContentLoaded', function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromAuth = urlParams.get('fromAuth');
+      
+      // Пробуем получить данные из разных источников
+      let userData = JSON.parse(localStorage.getItem('userData')) || 
+                    JSON.parse(sessionStorage.getItem('userData'));
+      
+      const profileContent = document.getElementById('profileContent');
+      
+      if (userData) {
+        // Показываем данные профиля
+        profileContent.innerHTML = `
+          <div class="profile-info">
+            <div class="info-row">
+              <span class="info-label">Имя:</span>
+              <span>${userData.name || 'Не указано'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Телефон:</span>
+              <span>${userData.phone || 'Не указан'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email:</span>
+              <span>${userData.email || 'Не указан'}</span>
+            </div>
+          </div>
+        `;
+      } else {
+        // Показываем сообщение для неавторизованных пользователей
+        profileContent.innerHTML = `
+          <div class="not-found">
+            <p>Данные профиля не найдены</p>
+            <div class="auth-links">
+              <a href="signup.html">Зарегистрироваться</a>
+              <a href="register.html">Войти</a>
+            </div>
+          </div>
+        `;
+        
+        // Если переход был с формы авторизации, но данные не сохранились
+        if (fromAuth) {
+          console.error('Ошибка: данные авторизации не сохранены');
+        }
+      }
+    });
   </script>
 </body>
 </html>
