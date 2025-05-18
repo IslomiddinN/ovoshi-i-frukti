@@ -249,6 +249,37 @@ form.addEventListener('submit', async function(e) {
     spinner.classList.remove('show');
   }
 });
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  const formData = {
+    name: document.getElementById('name').value.trim(),
+    phone: document.getElementById('phone').value.trim(),
+    email: document.getElementById('email').value.trim()
+  };
+
+  try {
+    // Отправка данных на сервер
+    const response = await fetch('/php/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    });
+
+    if (!response.ok) throw new Error('Ошибка регистрации');
+
+    // Сохраняем данные в localStorage
+    localStorage.setItem('userData', JSON.stringify(formData));
+    
+    // Перенаправляем на страницу профиля
+    window.location.href = 'profile.html';
+    
+  } catch (error) {
+    alert(error.message);
+  }
+});
         // Подготовка данных для отправки
         const formData = {
           name: document.getElementById('name').value.trim(),
