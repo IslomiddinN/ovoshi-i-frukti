@@ -215,14 +215,7 @@
           return;
         }
 
-        // Подготовка данных
-        const userData = {
-          name: document.getElementById('name').value.trim(),
-          phone: document.getElementById('phone').value.replace(/\D/g, ''),
-          email: document.getElementById('email').value.trim(),
-          address: document.getElementById('address').value.trim()
-        };
-
+        м
         // Сохраняем данные в localStorage
         localStorage.setItem('userData', JSON.stringify(userData));
         
@@ -230,7 +223,7 @@
         window.location.href = 'profile.html';
         
         // В реальном проекте здесь должна быть отправка на сервер:
-        /*
+        
         try {
           const response = await fetch('/api/register', {
             method: 'POST',
