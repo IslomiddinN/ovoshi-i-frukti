@@ -164,7 +164,7 @@
     </div>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Инициализация корзины
@@ -182,13 +182,15 @@
       const submitBtn = document.getElementById('submitBtn');
       const spinner = document.getElementById('spinner');
 
-      // Валидация в реальном времени
+      // Валидация паролей в реальном времени
       document.getElementById('password-confirm').addEventListener('input', function() {
         const password = document.getElementById('password').value;
         if (this.value !== password) {
           this.classList.add('input-error');
+          document.getElementById('password').classList.add('input-error');
         } else {
           this.classList.remove('input-error');
+          document.getElementById('password').classList.remove('input-error');
         }
       });
 
@@ -204,88 +206,19 @@
           el.classList.remove('input-error');
         });
 
-       // Замените этот код в вашем script-теге
-form.addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
-  submitBtn.disabled = true;
-  spinner.classList.add('show');
-  errorMessage.classList.remove('show');
-  
-  // Валидация данных
-  const errors = validateForm();
-  if (errors.length > 0) {
-    showErrors(errors);
-    submitBtn.disabled = false;
-    spinner.classList.remove('show');
-    return;
-  }
+        // Валидация данных
+        const errors = validateForm();
+        if (errors.length > 0) {
+          showErrors(errors);
+          submitBtn.disabled = false;
+          spinner.classList.remove('show');
+          return;
+        }
 
-  // Подготовка данных
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData.entries());
-
-  try {
-    // Реальная отправка на сервер
-    const response = await fetch('/api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data)
-    });
-
-    if (!response.ok) {
-      throw new Error('Ошибка сервера');
-    }
-
-    const result = await response.json();
-    alert('Регистрация успешна!');
-    window.location.href = '/profile.html';
-    
-  } catch (error) {
-    errorMessage.textContent = 'Ошибка при регистрации: ' + error.message;
-    errorMessage.classList.add('show');
-  } finally {
-    submitBtn.disabled = false;
-    spinner.classList.remove('show');
-  }
-});
-        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
-  const formData = {
-    name: document.getElementById('name').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
-    email: document.getElementById('email').value.trim()
-  };
-
-  try {
-    // Отправка данных на сервер
-    const response = await fetch('/php/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData)
-    });
-
-    if (!response.ok) throw new Error('Ошибка регистрации');
-
-    // Сохраняем данные в localStorage
-    localStorage.setItem('userData', JSON.stringify(formData));
-    
-    // Перенаправляем на страницу профиля
-    window.location.href = 'profile.html';
-    
-  } catch (error) {
-    alert(error.message);
-  }
-});
-        // Подготовка данных для отправки
+        // Подготовка данных
         const formData = {
           name: document.getElementById('name').value.trim(),
-          phone: document.getElementById('phone').value.trim(),
+          phone: document.getElementById('phone').value.replace(/\D/g, ''),
           email: document.getElementById('email').value.trim(),
           password: document.getElementById('password').value,
           address: document.getElementById('address').value.trim(),
@@ -293,12 +226,34 @@ form.addEventListener('submit', async function(e) {
         };
 
         try {
-          // Имитация отправки на сервер
-          await simulateServerRequest(formData);
-          alert('Регистрация прошла успешно!');
+          // Отправка на сервер
+          const response = await fetch('/api/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Ошибка регистрации');
+          }
+
+          const result = await response.json();
+          
+          // Сохраняем данные пользователя
+          localStorage.setItem('userData', JSON.stringify({
+            name: formData.name,
+            phone: formData.phone,
+            email: formData.email
+          }));
+          
+          // Перенаправляем на профиль
           window.location.href = 'profile.html';
+          
         } catch (error) {
-          errorMessage.textContent = 'Ошибка при регистрации. Попробуйте позже.';
+          errorMessage.textContent = error.message;
           errorMessage.classList.add('show');
         } finally {
           submitBtn.disabled = false;
@@ -306,43 +261,50 @@ form.addEventListener('submit', async function(e) {
         }
       });
 
-      // Функции валидации
+      // Функция валидации формы
       function validateForm() {
         const errors = [];
         const name = document.getElementById('name').value.trim();
-        const phone = document.getElementById('phone').value.trim();
+        const phone = document.getElementById('phone').value.replace(/\D/g, '');
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value;
         const passwordConfirm = document.getElementById('password-confirm').value;
         const privacyChecked = document.getElementById('privacy').checked;
 
-        if (!name) {
-          errors.push({ field: 'name', message: 'Укажите ФИО' });
+        if (!name || name.length < 2) {
+          errors.push({ field: 'name', message: 'Введите корректное имя (минимум 2 символа)' });
         }
 
-        if (!phone || phone.includes('_')) {
-          errors.push({ field: 'phone', message: 'Укажите корректный телефон' });
+        if (phone.length !== 11) {
+          errors.push({ field: 'phone', message: 'Введите корректный номер телефона' });
         }
 
-        if (!email || !validateEmail(email)) {
-          errors.push({ field: 'email', message: 'Укажите корректный email' });
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          errors.push({ field: 'email', message: 'Введите корректный email' });
         }
 
         if (password.length < 6) {
-          errors.push({ field: 'password', message: 'Пароль должен содержать не менее 6 символов' });
+          errors.push({ field: 'password', message: 'Пароль должен содержать минимум 6 символов' });
         }
 
         if (password !== passwordConfirm) {
-          errors.push({ field: 'password-confirm', message: 'Пароли не совпадают' });
+          errors.push({ 
+            field: 'password-confirm', 
+            message: 'Пароли не совпадают' 
+          });
         }
 
         if (!privacyChecked) {
-          errors.push({ field: 'privacy', message: 'Необходимо согласие с политикой конфиденциальности' });
+          errors.push({ 
+            field: 'privacy', 
+            message: 'Необходимо согласие с политикой конфиденциальности' 
+          });
         }
 
         return errors;
       }
 
+      // Показать ошибки
       function showErrors(errors) {
         const errorMessages = errors.map(error => error.message);
         errorMessage.textContent = errorMessages.join('. ');
@@ -359,11 +321,7 @@ form.addEventListener('submit', async function(e) {
         });
       }
 
-      function validateEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-      }
-
+      // Обновление счетчика корзины
       function updateCartCount() {
         const cart = JSON.parse(localStorage.getItem('cart') || '[]');
         document.querySelectorAll('.cart-count').forEach(el => {
@@ -371,12 +329,7 @@ form.addEventListener('submit', async function(e) {
         });
       }
 
-      async function simulateServerRequest(data) {
-        console.log('Данные для отправки:', data);
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        return { success: true };
-      }
-
+      // Синхронизация корзины между вкладками
       window.addEventListener('storage', function(e) {
         if (e.key === 'cart') {
           updateCartCount();
