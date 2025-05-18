@@ -5,13 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Регистрация | Корзинка</title>
   <link rel="stylesheet" href="css/signup.css">
-  <link rel="icon" href="favicon_io/favicon-32x32.png" type="favicon_io/favicon-32x32.png">
-  <link rel="icon" href="favicon_io/favicon-32x32.png" type="favicon_io/favicon-32x32.png" sizes="32x32">
-  <link rel="icon" href="favicon_io/favicon-16x16.png" type="favicon_io/favicon-16x16.png" sizes="16x16">
+  <link rel="icon" href="favicon_io/favicon-32x32.png" type="image/png">
+  <link rel="icon" href="favicon_io/favicon-16x16.png" type="image/png" sizes="16x16">
   <link rel="apple-touch-icon" href="favicon_io/apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <style>
+    .error-message {
+      color: #dc3545;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #f8d7da;
+      display: none;
+    }
+    .error-message.show {
+      display: block;
+    }
+    .spinner {
+      margin-left: 10px;
+      display: none;
+    }
+    .spinner.show {
+      display: inline-block;
+    }
+    .input-error {
+      border-color: #dc3545 !important;
+    }
+    .privacy-check.input-error label {
+      color: #dc3545;
+    }
+  </style>
 </head>
 <body>
   <header>
@@ -44,7 +69,9 @@
       <div class="auth-container">
         <h2 class="auth-title"><i class="fas fa-user-plus"></i> Создать аккаунт</h2>
         
-        <form class="auth-form" action="#" method="POST">
+        <form class="auth-form" id="registrationForm" method="POST">
+          <div class="error-message" id="errorMessage"></div>
+          
           <div class="form-group">
             <label for="name">ФИО*</label>
             <input type="text" id="name" name="name" required placeholder="Иванов Иван Иванович">
@@ -62,7 +89,7 @@
           
           <div class="form-group">
             <label for="password">Пароль*</label>
-            <input type="password" id="password" name="password" required placeholder="Не менее 6 символов">
+            <input type="password" id="password" name="password" required placeholder="Не менее 6 символов" minlength="6">
           </div>
           
           <div class="form-group">
@@ -85,7 +112,10 @@
             <label for="newsletter">Я хочу получать новости и специальные предложения</label>
           </div>
           
-          <button type="submit"><i class="fas fa-user-plus"></i> Зарегистрироваться</button>
+          <button type="submit" id="submitBtn">
+            <i class="fas fa-user-plus"></i> Зарегистрироваться
+            <span class="spinner" id="spinner"><i class="fas fa-spinner fa-spin"></i></span>
+          </button>
         </form>
         
         <div class="auth-links">
@@ -121,7 +151,7 @@
         <h3>Контакты</h3>
         <ul>
           <li><i class="fas fa-phone"></i> +7 996 107-35-09</li>
-          <li><i class="fas fa-envelope"></i> qq6584881@gmail.com </li>
+          <li><i class="fas fa-envelope"></i> qq6584881@gmail.com</li>
           <li><i class="fas fa-map-marker-alt"></i> г. Уфа, ул. Лучистая 110</li>
           <li><i class="fas fa-clock"></i> Пн-Пт: 9:00-21:00</li>
         </ul>
@@ -132,7 +162,156 @@
     </div>
   </footer>
 
-  <script src="js/singp.js"></script>
-  <script src="js/validation.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.6/jquery.inputmask.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Инициализация корзины
+      if (!localStorage.getItem('cart')) {
+        localStorage.setItem('cart', JSON.stringify([]));
+      }
+      updateCartCount();
+
+      // Маска для телефона
+      Inputmask("+7 (999) 999-99-99").mask(document.getElementById('phone'));
+
+      // Элементы формы
+      const form = document.getElementById('registrationForm');
+      const errorMessage = document.getElementById('errorMessage');
+      const submitBtn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('spinner');
+
+      // Валидация в реальном времени
+      document.getElementById('password-confirm').addEventListener('input', function() {
+        const password = document.getElementById('password').value;
+        if (this.value !== password) {
+          this.classList.add('input-error');
+        } else {
+          this.classList.remove('input-error');
+        }
+      });
+
+      // Обработка отправки формы
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        spinner.classList.add('show');
+        errorMessage.classList.remove('show');
+        
+        // Сброс ошибок
+        document.querySelectorAll('.input-error').forEach(el => {
+          el.classList.remove('input-error');
+        });
+
+        // Валидация данных
+        const errors = validateForm();
+        if (errors.length > 0) {
+          showErrors(errors);
+          submitBtn.disabled = false;
+          spinner.classList.remove('show');
+          return;
+        }
+
+        // Подготовка данных для отправки
+        const formData = {
+          name: document.getElementById('name').value.trim(),
+          phone: document.getElementById('phone').value.trim(),
+          email: document.getElementById('email').value.trim(),
+          password: document.getElementById('password').value,
+          address: document.getElementById('address').value.trim(),
+          newsletter: document.getElementById('newsletter').checked
+        };
+
+        try {
+          // Имитация отправки на сервер
+          await simulateServerRequest(formData);
+          alert('Регистрация прошла успешно!');
+          window.location.href = 'profile.html';
+        } catch (error) {
+          errorMessage.textContent = 'Ошибка при регистрации. Попробуйте позже.';
+          errorMessage.classList.add('show');
+        } finally {
+          submitBtn.disabled = false;
+          spinner.classList.remove('show');
+        }
+      });
+
+      // Функции валидации
+      function validateForm() {
+        const errors = [];
+        const name = document.getElementById('name').value.trim();
+        const phone = document.getElementById('phone').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const passwordConfirm = document.getElementById('password-confirm').value;
+        const privacyChecked = document.getElementById('privacy').checked;
+
+        if (!name) {
+          errors.push({ field: 'name', message: 'Укажите ФИО' });
+        }
+
+        if (!phone || phone.includes('_')) {
+          errors.push({ field: 'phone', message: 'Укажите корректный телефон' });
+        }
+
+        if (!email || !validateEmail(email)) {
+          errors.push({ field: 'email', message: 'Укажите корректный email' });
+        }
+
+        if (password.length < 6) {
+          errors.push({ field: 'password', message: 'Пароль должен содержать не менее 6 символов' });
+        }
+
+        if (password !== passwordConfirm) {
+          errors.push({ field: 'password-confirm', message: 'Пароли не совпадают' });
+        }
+
+        if (!privacyChecked) {
+          errors.push({ field: 'privacy', message: 'Необходимо согласие с политикой конфиденциальности' });
+        }
+
+        return errors;
+      }
+
+      function showErrors(errors) {
+        const errorMessages = errors.map(error => error.message);
+        errorMessage.textContent = errorMessages.join('. ');
+        errorMessage.classList.add('show');
+
+        errors.forEach(error => {
+          const field = document.getElementById(error.field);
+          if (field) {
+            field.classList.add('input-error');
+            if (error.field === 'privacy') {
+              field.parentElement.classList.add('input-error');
+            }
+          }
+        });
+      }
+
+      function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+      }
+
+      function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        document.querySelectorAll('.cart-count').forEach(el => {
+          el.textContent = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+        });
+      }
+
+      async function simulateServerRequest(data) {
+        console.log('Данные для отправки:', data);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        return { success: true };
+      }
+
+      window.addEventListener('storage', function(e) {
+        if (e.key === 'cart') {
+          updateCartCount();
+        }
+      });
+    });
+  </script>
 </body>
 </html>
