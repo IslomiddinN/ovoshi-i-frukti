@@ -22,3 +22,21 @@ app.post('/php/register', (req, res) => {
 app.listen(3000, () => {
   console.log('Сервер запущен на порту 3000');
 });
+// server.js
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+app.post('/php/register', (req, res) => {
+  const { name, phone, email } = req.body;
+  
+  // Здесь должна быть реальная регистрация в БД
+  console.log('Регистрация:', { name, phone, email });
+  
+  res.json({ 
+    success: true,
+    user: { name, phone, email }
+  });
+});
+
+app.listen(3000, () => console.log('Сервер запущен на порту 3000'));
