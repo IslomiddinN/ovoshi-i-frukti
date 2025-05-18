@@ -1,104 +1,37 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-  <meta charset="UTF-8">
   <title>Мой профиль</title>
   <style>
-    .profile-container {
-      max-width: 600px;
-      margin: 0 auto;
-      padding: 20px;
-      font-family: Arial, sans-serif;
-    }
-    .profile-header {
-      text-align: center;
-      margin-bottom: 30px;
-    }
     .profile-info {
-      background: #f5f5f5;
+      max-width: 600px;
+      margin: 20px auto;
       padding: 20px;
-      border-radius: 8px;
-    }
-    .info-row {
-      margin-bottom: 15px;
-    }
-    .info-label {
-      font-weight: bold;
-      display: inline-block;
-      width: 120px;
-    }
-    .not-found {
-      text-align: center;
-      padding: 40px;
-      color: #666;
-    }
-    .auth-links {
-      margin-top: 20px;
-    }
-    .auth-links a {
-      color: #0066cc;
-      margin: 0 10px;
+      border: 1px solid #ddd;
     }
   </style>
 </head>
 <body>
-  <div class="profile-container">
-    <div class="profile-header">
-      <h1>Мой профиль</h1>
-    </div>
-    
-    <div id="profileContent">
-      <!-- Данные будут загружены здесь -->
-    </div>
+  <div class="profile-info" id="profileData">
+    <h2>Загрузка профиля...</h2>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const fromAuth = urlParams.get('fromAuth');
-      
-      // Пробуем получить данные из разных источников
-      let userData = JSON.parse(localStorage.getItem('userData')) || 
-                    JSON.parse(sessionStorage.getItem('userData'));
-      
-      const profileContent = document.getElementById('profileContent');
-      
-      if (userData) {
-        // Показываем данные профиля
-        profileContent.innerHTML = `
-          <div class="profile-info">
-            <div class="info-row">
-              <span class="info-label">Имя:</span>
-              <span>${userData.name || 'Не указано'}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Телефон:</span>
-              <span>${userData.phone || 'Не указан'}</span>
-            </div>
-            <div class="info-row">
-              <span class="info-label">Email:</span>
-              <span>${userData.email || 'Не указан'}</span>
-            </div>
-          </div>
-        `;
-      } else {
-        // Показываем сообщение для неавторизованных пользователей
-        profileContent.innerHTML = `
-          <div class="not-found">
-            <p>Данные профиля не найдены</p>
-            <div class="auth-links">
-              <a href="register.html">Зарегистрироваться</a>
-              <a href="signup.html">Войти</a>
-            </div>
-          </div>
-        `;
-        
-        // Если переход был с формы авторизации, но данные не сохранились
-        if (fromAuth) {
-          console.error('Ошибка: данные авторизации не сохранены');
-        }
-      }
-    });
+    const userData = JSON.parse(localStorage.getItem('userData'));
+    if (userData) {
+      document.getElementById('profileData').innerHTML = `
+        <h2>Мой профиль</h2>
+        <p><strong>Имя:</strong> ${userData.name}</p>
+        <p><strong>Телефон:</strong> ${userData.phone}</p>
+        <p><strong>Email:</strong> ${userData.email}</p>
+        ${userData.address ? `<p><strong>Адрес:</strong> ${userData.address}</p>` : ''}
+      `;
+    } else {
+      document.getElementById('profileData').innerHTML = `
+        <h2>Профиль не найден</h2>
+        <p>Пожалуйста, <a href="register.html">зарегистрируйтесь</a></p>
+      `;
+    }
   </script>
 </body>
 </html>
