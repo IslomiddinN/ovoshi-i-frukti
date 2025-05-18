@@ -71,8 +71,12 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       if (data.status === 'success') {
-        document.getElementById('success-message').textContent = 'Успешный вход!';
-        // Редирект или другие действия после входа
+        // Сохраняем данные пользователя
+        localStorage.setItem('userData', JSON.stringify({
+          phone: phone,
+          token: data.token // если используется JWT
+        }));
+        window.location.href = 'profile.html';
       } else {
         document.getElementById('code-error').textContent = data.message;
       }
@@ -95,15 +99,17 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(response => response.json())
     .then(data => {
       if (data.status === 'success') {
-        document.getElementById('success-message').textContent = 'Успешный вход!';
-        // Редирект или другие действия после входа
+        // Сохраняем данные пользователя
+        localStorage.setItem('userData', JSON.stringify({
+          phone: phone,
+          name: data.name, // если сервер возвращает имя
+          token: data.token // если используется JWT
+        }));
+        window.location.href = 'profile.html';
       } else {
         document.getElementById('password-error').textContent = data.message;
       }
     })
-      // После успешной регистрации
-console.log('Сохраненные данные:', localStorage.getItem('userData')); // Для отладки
-window.location.href = 'profile.html';
     .catch(error => {
       console.error('Error:', error);
     });
