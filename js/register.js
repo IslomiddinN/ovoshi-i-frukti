@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const phone = document.getElementById('phoneForPassword').value.replace(/\D/g, '');
     const password = document.getElementById('password').value;
     
-    fetch('/api/login', {
+    fetch('/api/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ phone: phone, password: password })
