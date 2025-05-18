@@ -101,6 +101,9 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('password-error').textContent = data.message;
       }
     })
+      // После успешной регистрации
+console.log('Сохраненные данные:', localStorage.getItem('userData')); // Для отладки
+window.location.href = 'profile.html';
     .catch(error => {
       console.error('Error:', error);
     });
