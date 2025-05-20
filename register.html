@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Вход по номеру телефона </title>
+  <title>Вход по номеру телефона или email</title>
   <link rel="icon" href="favicon_io/favicon-32x32.png" type="image/png">
   <link rel="stylesheet" href="css/register.css" />
   <script src="https://unpkg.com/inputmask@5.0.8/dist/inputmask.min.js"></script>
@@ -51,13 +51,16 @@
     .login-btn:disabled {
       background-color: #cccccc;
     }
+    .email-fields {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <div class="login-container">
     <div class="auth-tabs">
-      <div class="auth-tab active" data-tab="phone"></div>
-      <div class="auth-tab active" data-tab="email"></div>
+      <div class="auth-tab active" data-tab="phone">Телефон</div>
+      <div class="auth-tab" data-tab="email">Email</div>
     </div>
     
     <h2 id="auth-title">Вход по номеру телефона</h2>
@@ -79,6 +82,23 @@
 
         <button type="button" class="login-btn" id="sendCodeBtn">Получить код</button>
         <button type="button" class="login-btn verification-code" id="verifyCodeBtn" style="display: none;">Подтвердить</button>
+      </div>
+      
+      <!-- Форма входа по email -->
+      <div class="email-fields">
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" placeholder="Введите ваш email" required>
+          <div class="error-message" id="email-error"></div>
+        </div>
+        
+        <div class="input-group">
+          <label for="emailPassword">Пароль</label>
+          <input type="password" id="emailPassword" name="emailPassword" placeholder="Введите пароль" required>
+          <div class="error-message" id="email-password-error"></div>
+        </div>
+        
+        <button type="button" class="login-btn" id="loginWithEmailBtn">Войти</button>
       </div>
       
       <div class="success-message" id="success-message"></div>
@@ -204,11 +224,9 @@
         if (phoneTab.classList.contains('active')) {
           // Переключаем на вход по email с паролем
           emailTab.click();
-          toggleAuthBtn.textContent = 'Войти с кодом';
         } else {
           // Переключаем на вход по телефону с кодом
           phoneTab.click();
-          toggleAuthBtn.textContent = 'Войти с паролем';
         }
       });
     });
