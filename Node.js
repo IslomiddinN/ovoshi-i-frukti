@@ -38,5 +38,20 @@ app.post('/php/register', (req, res) => {
     user: { name, phone, email }
   });
 });
+const express = require('express');
+const app = express();
+const nodemailer = require('nodemailer');
 
+app.post('/reset-password', (req, res) => {
+    const { email } = req.body;
+    
+    // 1. Check if email exists in DB
+    // 2. Generate a unique reset token (JWT or UUID)
+    // 3. Send email with reset link (e.g., /reset-password?token=...)
+    // 4. Handle errors (e.g., "Email not found")
+    
+    res.send("Password reset link sent!");
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));
 app.listen(3000, () => console.log('Сервер запущен на порту 3000'));
