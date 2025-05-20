@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Вход по телефону или email</title>
+  <title>Вход по номеру телефона </title>
   <link rel="icon" href="favicon_io/favicon-32x32.png" type="image/png">
   <link rel="stylesheet" href="css/register.css" />
   <script src="https://unpkg.com/inputmask@5.0.8/dist/inputmask.min.js"></script>
@@ -79,23 +79,6 @@
 
         <button type="button" class="login-btn" id="sendCodeBtn">Получить код</button>
         <button type="button" class="login-btn verification-code" id="verifyCodeBtn" style="display: none;">Подтвердить</button>
-      </div>
-      
-      <!-- Форма входа по email -->
-      <div class="email-fields" style="display: none;">
-        <div class="input-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="example@mail.ru">
-          <div class="error-message" id="email-error"></div>
-        </div>
-
-        <div class="input-group">
-          <label for="emailPassword">Пароль</label>
-          <input type="password" id="emailPassword" name="emailPassword" placeholder="Введите пароль">
-          <div class="error-message" id="email-password-error"></div>
-        </div>
-        
-        <button type="button" class="login-btn" id="loginWithEmailBtn">Войти</button>
       </div>
       
       <div class="success-message" id="success-message"></div>
